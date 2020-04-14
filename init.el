@@ -1,3 +1,10 @@
+;;
+;;----
+;;
+(defun open-init-file()
+  (interactive)
+  (find-file "~/emacs.d/ccemacs/init.el"))
+
 ;;---------------------------------------------------
 ;;basic configuration
 ;;---------------------------------------------------
@@ -27,6 +34,7 @@
 (setq default-fill-column 72)
 ;; show welcome message in the scratch buffer 
 (setq initial-scratch-message "Welcome in CCEmacs")
+;;
 
 ;;--------------------------------------------------
 ;;package manage
@@ -70,8 +78,52 @@
   (load-theme 'doom-one t))
 
 
+;;---------------------------
+;; ivy completion          ;;
+;;---------------------------
+(use-package ivy
+  :ensure t
+  :init
+  (setq enable-recursive-minibuffers t)
+  (setq ivy-use-selectable-prompt t
+	ivy-use-virtual-buffers t
+	ivy-height 10
+	ivy-fixed-height-minibuffer t
+	ivy-conunt-format "(%d/%d) "
+	ivy-on-del-error-function nil
+	ivy-initial-input-alist nil)
+  :config
+  (ivy-mode 1))
+
+(use-package counsel
+  :ensure t
+  :config
+  (counsel-mode 1)) 
+
+;;(use-package ivy :ensure t
+;;  :diminish (ivy-mode . "")
+;;  :bind
+;;  (:map ivy-mode-map
+;;        ("C-'" . ivy-avy))
+;;  :config
+;;  (ivy-mode 1)
+  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+;;  (setq ivy-use-virtual-buffers t)
+  ;; number of result lines to display
+;;  (setq ivy-height 10)
+  ;; does not count candidates
+;;  (setq ivy-count-format "")
+  ;; no regexp by default
+;;  (setq ivy-initial-inputs-alist nil)
+  ;; configure regexp engine.
+;;  (setq ivy-re-builders-alist
+  ;; allow input not in order
+;;     '((t   . ivy--regex-ignore-order))))
+
+(use-package evil-magit
+  :ensure t)
 ;;----------------------------
-;;VIM mode
+;;VIM mode                  ;;
 ;;----------------------------
 (use-package evil
   :ensure t
@@ -85,9 +137,10 @@
   :config
   (evil-escape-mode 1))
 
+
 ;;---------------------------
-;; key binding
-;;--------------------------
+;; key binding             ;;
+;;---------------------------
 
 ;; config needed packages
 ;; Which Key
@@ -105,15 +158,36 @@
   :config (general-define-key
   :states '(normal visual insert emacs)
   :prefix "SPC"
-  :non-normal-prefix "M-SPC"
-  ;; "/"   '(counsel-rg :which-key "ripgrep")
+  :non-normal-prefix "C-SPC"
+
+  "q" '(:ignore t :which-key "Quit")
+  "qq" 'exit
+  "qs" '(quit and save)
+  
+  ;;"/"   'swiper
+  "/"   'counsel-ag
+   ":"   'counsel-M-x
+
+   "gs"  'magit-status
   ;; You'll need counsel package for this
   "TAB" '(switch-to-prev-buffer :which-key "previous buffer")
-  "SPC" '(helm-M-x :which-key "M-x")
-  "pf"  '(helm-find-file :which-key "find files")
+  "SPC" '(counsel-M-x :which-key "M-x")
+  "pf"  '(counsel-find-file :which-key "find files")
+
+  ;; File mananger
+  "f"  '(:ignore t :which-key "Files")
+  "fs" 'save-buffer
+  "fe" 'open-init-file
+  
   ;; Buffers
-  "bb"  '(helm-buffers-list :which-key "buffers list")
-  ;; Window
+  "b"   '(:ignore t :which-key "Buffers")
+  "bb"  '(ivy-buffers-list :which-key "buffers list")
+  "bn"  '(ivy-switch-buffer :which-key "switch buffer")
+  "bp"  'prev-buffer
+  "bk"  'kill-buffer
+
+  ;;Window
+  "w"   '(:ignore t :which-key "Window")
   "wl"  '(windmove-right :which-key "move right")
   "wh"  '(windmove-left :which-key "move left")
   "wk"  '(windmove-up :which-key "move up")
